@@ -10,14 +10,8 @@ public class NpcSide : MonoBehaviour
     private GameObject[] plantObject;
     private PlantTile[] plantTiles;
 
-    [Header("AI Settings")]
-    public float moveSpeed;
-    public float avoidanceDistance = 1f;
-    public LayerMask obstacleLayer;
-    private Transform obstacleDetector;
     private void Awake()
     {
-        obstacleDetector = GetComponent<Transform>();
         plantObject = GameObject.FindGameObjectsWithTag("Tiles");
         plantTiles = new PlantTile[plantObject.Length];
         for (int i = 0; i < plantTiles.Length; i++)
@@ -28,7 +22,7 @@ public class NpcSide : MonoBehaviour
     }
     private void Start()
     {
-        
+        getRandomTarget();
     }
     private void getRandomTarget()
     {
@@ -44,28 +38,22 @@ public class NpcSide : MonoBehaviour
         }
         int randomIndex = validIndices[random.Next(0, validIndices.Count)];
         currentTarget = plantTiles[randomIndex];
+        StartCoroutine(chasingTarget());
     }
-    IEnumerator chaseTarget()
+    IEnumerator chasingTarget()
     {
-        GameObject target = currentTarget.gameObject;
-        RaycastHit2D hitLeft = Physics2D.Raycast(obstacleDetector.position, Vector2.left, avoidanceDistance, obstacleLayer);
-        RaycastHit2D hitRight = Physics2D.Raycast(obstacleDetector.position, Vector2.right, avoidanceDistance, obstacleLayer);
-        float distance = Vector2.Distance(transform.position, target.transform.position);
-        while (distance > 0)
+        Vector2 targetPosition = currentTarget.gameObject.transform.position;
+        float speed = 5f; // Speed at which the NPC moves towards the target
+
+        while (Vector2.Distance(gameObject.transform.position, targetPosition) > 0.1f) // Use a small threshold to avoid floating point precision issues
         {
-            transform.position = Vector2.MoveTowards(transform.position, target.transform.position, moveSpeed * Time.deltaTime);
-            if (hitLeft.collider != null)
-            {
-                // Avoid obstacle by moving right
-                transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);
-            }
-            else if (hitRight.collider != null)
-            {
-                // Avoid obstacle by moving left
-                transform.Translate(Vector2.left * moveSpeed * Time.deltaTime);
-            }
+            // Move the NPC towards the target
+            gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, targetPosition, speed * Time.deltaTime);
+
+            Debug.Log("Chasing");
+            yield return null; // This allows the coroutine to pause here, letting other game processes to run
         }
-        
-        yield return null;
+        Debug.Log("Done");
     }
+
 }
