@@ -10,6 +10,9 @@ public class NpcSide : MonoBehaviour
     private GameObject[] plantObject;
     private PlantTile[] plantTiles;
 
+    [Header("AI Settings")]
+    public GameObject[] SpawnPoints;
+    public float speed;
     private void Awake()
     {
         plantObject = GameObject.FindGameObjectsWithTag("Tiles");
@@ -43,15 +46,10 @@ public class NpcSide : MonoBehaviour
     IEnumerator chasingTarget()
     {
         Vector2 targetPosition = currentTarget.gameObject.transform.position;
-        float speed = 5f; // Speed at which the NPC moves towards the target
-
-        while (Vector2.Distance(gameObject.transform.position, targetPosition) > 0.1f) // Use a small threshold to avoid floating point precision issues
+        while (Vector2.Distance(gameObject.transform.position, targetPosition) > 1f)
         {
-            // Move the NPC towards the target
             gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, targetPosition, speed * Time.deltaTime);
-
-            Debug.Log("Chasing");
-            yield return null; // This allows the coroutine to pause here, letting other game processes to run
+            yield return null;
         }
         Debug.Log("Done");
     }
