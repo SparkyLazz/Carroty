@@ -11,7 +11,6 @@ public class NpcSide : MonoBehaviour
     private PlantTile[] plantTiles;
 
     [Header("AI Settings")]
-    public GameObject[] SpawnPoints;
     public float speed;
     private void Awake()
     {
@@ -48,7 +47,12 @@ public class NpcSide : MonoBehaviour
         Vector2 targetPosition = currentTarget.gameObject.transform.position;
         while (Vector2.Distance(gameObject.transform.position, targetPosition) > 1f)
         {
-            gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, targetPosition, speed * Time.deltaTime);
+            int choice = UnityEngine.Random.Range(0, 1);
+            if(choice == 1)
+            {
+
+            }
+            //gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, targetPosition, speed * Time.deltaTime);
             yield return null;
         }
         Debug.Log("Done");
